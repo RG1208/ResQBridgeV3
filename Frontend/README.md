@@ -1,54 +1,89 @@
-# React + TypeScript + Vite
+Here is the corrected `README.md` file specifically for the frontend:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+````markdown
+# ResQ-Bridge Frontend 🚨
 
-Currently, two official plugins are available:
+Welcome to the frontend of **ResQ-Bridge**, an emergency response and monitoring platform designed to detect accidents using smart IoT devices (SIDD), track emergencies in real-time, and manage disaster response with efficiency and transparency.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **React** (with Vite)
+- **Tailwind CSS**
+- **TypeScript**
+- **React Router**
+- **Lucide React Icons**
+- **Axios** (for API calls)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Clone the Repository
+
+Clone the `ResQ-Bridge` repository to your local machine:
+
+```bash
+git clone https://github.com/RG1208/ResQBridgeV3.git
+````
+
+### 2. Install Dependencies
+
+Navigate to the `Frontend` directory and install the dependencies:
+
+```bash
+cd ResQBridgeV3/Frontend
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Start the Development Server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Run the following command to start the development server:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+pnpm run dev
+```
+
+---
+
+## Available Routes
+
+| Path                   | Page                     |
+| ---------------------- | ------------------------ |
+| `/`                    | Home                     |
+| `/about`               | About                    |
+| `/features`            | Features                 |
+| `/login`               | Login                    |
+| `/crowdfunding`        | Crowdfunding (public)    |
+| `/admin`               | Admin Dashboard          |
+| `/admin/sidd-tracking` | Track all SIDD devices   |
+| `/admin/emergencies`   | Emergency management     |
+| `/admin/users`         | Manage registered users  |
+| `/admin/crowdfunding`  | Admin crowdfunding panel |
+
+---
+
+## ✨ Features
+
+* Real-time emergency updates and tracking
+* Dashboard view for SIDD deployment and usage
+* Crowdfunding support page for donations
+* Admin panel for complete system management
+* Mobile responsive and fast UI with Tailwind
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+## 🧑‍💻 Developed By
+
+**Team ResQ-Bridge**
+With ❤️ for saving lives.
+
+```
 ```
