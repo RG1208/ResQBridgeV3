@@ -1,5 +1,3 @@
-Here is the corrected `README.md` file specifically for the frontend:
-
 ````markdown
 # ResQ-Bridge Frontend 🚨
 
