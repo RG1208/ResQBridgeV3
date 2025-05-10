@@ -14,30 +14,28 @@ import SIDDTracking from './adminDashboard/SiddTracking';
 import EmergencyManagement from './adminDashboard/EmergencyManagement';
 import UserManagement from './adminDashboard/UserManagement';
 import CrowdFunding from './adminDashboard/CrowdFunding';
-import Footer from './components/Footer';
-import Navbar from './components/Navbar';
+import PublicLayout from './components/PublicLayout';
 
 function App() {
   return (
     <Router>
-       <div className="min-h-screen bg-white flex flex-col">
-        <Navbar />
-        <main className="flex-grow"></main>
       <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/crowdfunding" element={<Crowdfunding />} />
-        
-        {/* Protected routes */}
+        {/* Public Layout routes */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/crowdfunding" element={<Crowdfunding />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+
+        {/* Protected Admin routes */}
         <Route 
           path="/admin/dashboard" 
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminLayout />  {/* Use AdminLayout as the layout wrapper */}
+              <AdminLayout />
             </ProtectedRoute>
           }
         >
@@ -48,7 +46,7 @@ function App() {
           <Route path="crowdfunding" element={<CrowdFunding />} />
         </Route>
 
-        
+        {/* Protected User route */}
         <Route 
           path="/user/dashboard" 
           element={
@@ -57,7 +55,8 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        
+
+        {/* Protected Fleet route */}
         <Route 
           path="/fleet/dashboard" 
           element={
@@ -66,18 +65,13 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        
-        {/* Redirect root to login */}
+
+        {/* Redirect root or invalid routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
-        
-        {/* Catch all - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-      <Footer />
-      </div>
     </Router>
   );
 }
 
 export default App;
-

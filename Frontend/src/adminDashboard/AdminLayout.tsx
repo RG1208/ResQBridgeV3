@@ -1,16 +1,24 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MapPin, Users, Activity, DollarSign, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  MapPin,
+  Users,
+  Activity,
+  DollarSign,
+  LogOut,
+} from 'lucide-react';
+import AdminNavbar from '@/components/AdminNavbar';
 
 const AdminLayout: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={20} /> },
-    { name: 'SIDD Tracking', path: '/admin/sidd-tracking', icon: <MapPin size={20} /> },
-    { name: 'Emergencies', path: '/admin/emergencies', icon: <Activity size={20} /> },
-    { name: 'User Management', path: '/admin/users', icon: <Users size={20} /> },
-    { name: 'Crowdfunding', path: '/admin/crowdfunding', icon: <DollarSign size={20} /> },
+    { name: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
+    { name: 'SIDD Tracking', path: '/admin/dashboard/sidd-tracking', icon: <MapPin size={20} /> },
+    { name: 'Emergencies', path: '/admin/dashboard/emergencies', icon: <Activity size={20} /> },
+    { name: 'User Management', path: '/admin/dashboard/users', icon: <Users size={20} /> },
+    { name: 'Crowdfunding', path: '/admin/dashboard/crowdfunding', icon: <DollarSign size={20} /> },
   ];
 
   return (
@@ -49,17 +57,17 @@ const AdminLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        {/* Top Bar (Optional) */}
-        <div className="mb-4">
-          <h1 className="text-2xl font-semibold text-gray-800">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        <AdminNavbar />
+
+        <main className="p-6 flex-1 overflow-y-auto">
+          <h1 className="text-2xl font-semibold text-gray-800 mb-4">
             {navItems.find((item) => location.pathname === item.path)?.name || 'Admin'}
           </h1>
-        </div>
 
-        {/* Page Content */}
-        <Outlet />
+          <Outlet />
+        </main>
       </div>
     </div>
   );
