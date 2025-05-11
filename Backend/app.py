@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy  # type: ignore
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity # type: ignore
+from flask_cors import CORS    # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
@@ -29,43 +29,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.email}>'
-
-# Create tables
-@app.before_first_request
-def create_tables():
-    db.create_all()
-    
-    # Check if we need to create dummy users
-    if User.query.count() == 0:
-        # Create admin user
-        admin = User(
-            name='Admin User',
-            email='admin@example.com',
-            password=generate_password_hash('password123'),
-            role='admin'
-        )
-        
-        # Create regular user
-        user = User(
-            name='Regular User',
-            email='user@example.com',
-            password=generate_password_hash('password123'),
-            role='user'
-        )
-        
-        # Create fleet owner
-        fleet = User(
-            name='Fleet Owner',
-            email='fleet@example.com',
-            password=generate_password_hash('password123'),
-            role='fleetowner'
-        )
-        
-        # Add to database
-        db.session.add(admin)
-        db.session.add(user)
-        db.session.add(fleet)
-        db.session.commit()
 
 # Routes
 @app.route('/api/auth/register', methods=['POST'])
