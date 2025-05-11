@@ -17,9 +17,9 @@ import PublicLayout from './components/PublicLayout';
 import FleetManagement from './fleetDashboard/FleetManagement';
 import IncidentAlerts from './fleetDashboard/IncidentAlerts';
 import DriverManagement from './fleetDashboard/DriverManagement';
-import { Settings } from 'lucide-react';
+import Settings from './fleetDashboard/Settings';
 import Support from './fleetDashboard/Support';
-import FleetDashboardLayout from './fleetDashboard/FleetDashboardLayout';
+import FleetSidebar from './fleetDashboard/FleetSidebar';
 import FleetDashboard from './fleetDashboard/FleetDashboard';
 
 function App() {
@@ -67,7 +67,7 @@ function App() {
           path="/fleet/dashboard"
           element={
             <ProtectedRoute allowedRoles={['fleetowner']}>
-              <FleetDashboardLayout />
+              <FleetSidebar />
             </ProtectedRoute>
           }
         >
