@@ -1,31 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertTriangle, Users, Activity, DollarSign, Box } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/admin/dashboard', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const result = await response.json();
+        setData(result.data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!data) return <div>No data available</div>;
+
   const stats = [
     {
       title: 'Total Emergencies',
-      value: 182,
+      value: data.total_incidents,
       icon: <AlertTriangle className="h-6 w-6 text-red-500" />,
     },
     {
       title: 'Resolved Emergencies',
-      value: 139,
+      value: data.resolved_incidents,
       icon: <Activity className="h-6 w-6 text-green-500" />,
     },
     {
       title: 'Registered Users',
-      value: 756,
+      value: data.total_users,
       icon: <Users className="h-6 w-6 text-blue-500" />,
     },
     {
       title: 'Funds Raised',
-      value: '₹1,85,000',
+      value: `₹${data.total_funds}`,
       icon: <DollarSign className="h-6 w-6 text-yellow-500" />,
     },
     {
       title: 'SIDD Devices Deployed',
-      value: 57,
+      value: data.total_devices,
       icon: <Box className="h-6 w-6 text-purple-500" />,
     },
   ];
