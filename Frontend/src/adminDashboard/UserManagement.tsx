@@ -9,9 +9,9 @@ type User = {
 };
 
 const users: User[] = [
-  { id: 'U001', name: 'Khushi Mehra', email: 'khushi@example.com', role: 'Admin', status: 'Active' },
-  { id: 'U002', name: 'Rachit Singh', email: 'rachit@example.com', role: 'Admin', status: 'Active' },
-  { id: 'U003', name: 'Neha Sharma', email: 'neha@example.com', role: 'User', status: 'Blocked' },
+  { id: 'U001', name: 'Khushi Gaba', email: 'khushi@example.com', role: 'Admin', status: 'Active' },
+  { id: 'U002', name: 'Rachit Garg', email: 'rachit@example.com', role: 'Admin', status: 'Active' },
+  { id: 'U003', name: 'Neha Garg', email: 'neha@example.com', role: 'User', status: 'Blocked' },
 ];
 
 const statusBadge = {
