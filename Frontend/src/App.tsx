@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UserDashboard from './userDashboard/UserDashboard';
-import FleetDashboard from './fleetDashboard/FleetDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -15,6 +14,13 @@ import EmergencyManagement from './adminDashboard/EmergencyManagement';
 import UserManagement from './adminDashboard/UserManagement';
 import CrowdFunding from './adminDashboard/CrowdFunding';
 import PublicLayout from './components/PublicLayout';
+import FleetManagement from './fleetDashboard/FleetManagement';
+import IncidentAlerts from './fleetDashboard/IncidentAlerts';
+import DriverManagement from './fleetDashboard/DriverManagement';
+import { Settings } from 'lucide-react';
+import Support from './fleetDashboard/Support';
+import FleetDashboardLayout from './fleetDashboard/FleetDashboardLayout';
+import FleetDashboard from './fleetDashboard/FleetDashboard';
 
 function App() {
   return (
@@ -57,14 +63,21 @@ function App() {
         />
 
         {/* Protected Fleet route */}
-        <Route 
-          path="/fleet/dashboard" 
+        <Route
+          path="/fleet/dashboard"
           element={
             <ProtectedRoute allowedRoles={['fleetowner']}>
-              <FleetDashboard />
+              <FleetDashboardLayout />
             </ProtectedRoute>
-          } 
-        />
+          }
+        >
+          <Route index element={<FleetDashboard />} />
+          <Route path="fleet" element={<FleetManagement />} />
+          <Route path="alerts" element={<IncidentAlerts />} />
+          <Route path="drivers" element={<DriverManagement />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="support" element={<Support />} />
+        </Route>
 
         {/* Redirect root or invalid routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />

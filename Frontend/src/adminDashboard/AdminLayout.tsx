@@ -8,7 +8,7 @@ import {
   DollarSign,
   LogOut,
 } from 'lucide-react';
-import AdminNavbar from '@/components/AdminNavbar';
+import ProtectedNavbar from '@/components/ProtectedNavbar';
 
 const AdminLayout: React.FC = () => {
   const location = useLocation();
@@ -59,7 +59,7 @@ const AdminLayout: React.FC = () => {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col">
-        <AdminNavbar />
+        <ProtectedNavbar />
 
         <main className="p-6 flex-1 overflow-y-auto">
           <h1 className="text-2xl font-semibold text-gray-800 mb-4">

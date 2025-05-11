@@ -2,7 +2,7 @@ import React from 'react';
 import { LogOut, Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const AdminNavbar: React.FC = () => {
+const ProtectedNavbar: React.FC = () => {
   return (
     <header className="w-full bg-white shadow-sm px-6 py-3 flex justify-end items-center sticky top-0 z-50">
       <div className="flex items-center gap-4">
@@ -26,4 +26,4 @@ const AdminNavbar: React.FC = () => {
   );
 };
 
-export default AdminNavbar;
+export default ProtectedNavbar;
