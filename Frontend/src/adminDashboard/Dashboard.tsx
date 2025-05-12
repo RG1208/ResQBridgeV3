@@ -1,64 +1,35 @@
-import React, { useEffect, useState } from 'react';
 import { AlertTriangle, Users, Activity, DollarSign, Box } from 'lucide-react';
-
-const Dashboard: React.FC = () => {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/admin/dashboard', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        if (!response.ok) throw new Error('Failed to fetch dashboard data');
-        const result = await response.json();
-        setData(result.data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!data) return <div>No data available</div>;
 
   const stats = [
     {
       title: 'Total Emergencies',
-      value: data.total_incidents,
+      value: 50,
       icon: <AlertTriangle className="h-6 w-6 text-red-500" />,
     },
     {
       title: 'Resolved Emergencies',
-      value: data.resolved_incidents,
+      value: 40,
       icon: <Activity className="h-6 w-6 text-green-500" />,
     },
     {
       title: 'Registered Users',
-      value: data.total_users,
+      value: 200,
       icon: <Users className="h-6 w-6 text-blue-500" />,
     },
     {
       title: 'Funds Raised',
-      value: `₹${data.total_funds}`,
+      value: `₹10,000`,
       icon: <DollarSign className="h-6 w-6 text-yellow-500" />,
     },
     {
       title: 'SIDD Devices Deployed',
-      value: data.total_devices,
+      value: 100,
       icon: <Box className="h-6 w-6 text-purple-500" />,
     },
   ];
 
-  return (
+  export default function  Dashboard () {
+    return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -92,4 +63,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+
