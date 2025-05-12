@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import UserDashboard from './userDashboard/UserDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -21,6 +20,13 @@ import Settings from './fleetDashboard/Settings';
 import Support from './fleetDashboard/Support';
 import FleetSidebar from './fleetDashboard/FleetSidebar';
 import FleetDashboard from './fleetDashboard/FleetDashboard';
+import Alerts from './userDashboard/UserAlerts';
+import Family from './userDashboard/UserFamily';
+import Devices from './userDashboard/UserDevices';
+import History from './userDashboard/UserHistory';
+import Map from './userDashboard/UserMap';
+import UserSidebar from './userDashboard/UserDashboardLayout';
+import UserDashboard from './userDashboard/UserDashboard';
 
 function App() {
   return (
@@ -53,14 +59,22 @@ function App() {
         </Route>
 
         {/* Protected User route */}
-        <Route 
-          path="/user/dashboard" 
+        <Route
+          path="/user/dashboard"
           element={
             <ProtectedRoute allowedRoles={['user']}>
-              <UserDashboard />
+              <UserSidebar />
             </ProtectedRoute>
-          } 
-        />
+          }
+        >
+          <Route index element={<UserDashboard />} />
+          <Route path="alerts" element={<Alerts />} />
+          <Route path="family" element={<Family />} />
+          <Route path="history" element={<History />} />
+          <Route path="map" element={<Map />} />
+          <Route path="devices" element={<Devices />} />
+        </Route>
+
 
         {/* Protected Fleet route */}
         <Route
