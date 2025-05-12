@@ -13,3 +13,19 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.email}>'
+
+class Vehicle(db.Model):
+    __tablename__ = 'vehicle'  # This specifies the table name
+    
+    id = db.Column(db.String(100), primary_key=True)
+    model = db.Column(db.String(100))
+    status = db.Column(db.String(50), default='Offline')
+    sidd = db.Column(db.String(100))
+    state = db.Column(db.String(50), default='Stationary')
+
+    def __init__(self, id, model, status, sidd, state):
+        self.id = id
+        self.model = model
+        self.status = status
+        self.sidd = sidd
+        self.state = state
