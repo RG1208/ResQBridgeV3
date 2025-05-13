@@ -6,6 +6,7 @@ from models import db
 from routes.auth import auth_bp
 from dashboards import dashboard_bp
 from routes.fleetManagement import fleet_bp
+from routes.driverManagement import driver_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -18,6 +19,7 @@ JWTManager(app)  # <-- THIS LINE IS MANDATORY
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(fleet_bp, url_prefix='/api/fleet')
+app.register_blueprint(driver_bp, url_prefix='/api/driver')
 
 with app.app_context():
     db.create_all()

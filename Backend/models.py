@@ -29,3 +29,23 @@ class Vehicle(db.Model):
         self.status = status
         self.sidd = sidd
         self.state = state
+
+class Driver(db.Model):
+    __tablename__ = 'drivers'
+
+    id = db.Column(db.String(100), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    assigned_vehicle = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.Enum('Active', 'Off Duty', name='driver_status'), nullable=False)
+    emergency_contact = db.Column(db.String(20), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'phone': self.phone,
+            'assignedVehicle': self.assigned_vehicle,
+            'status': self.status,
+            'emergencyContact': self.emergency_contact
+        }
