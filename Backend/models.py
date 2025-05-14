@@ -49,3 +49,12 @@ class Driver(db.Model):
             'status': self.status,
             'emergencyContact': self.emergency_contact
         }
+    
+
+class SIDDDevice(db.Model):
+    id = db.Column(db.String, primary_key=True)
+    driver = db.Column(db.String, nullable=False)
+    contact = db.Column(db.String, nullable=False)
+    car = db.Column(db.String, nullable=False)
+    status = db.Column(db.String, nullable=False)
+    emergency = db.Column(db.String, nullable=False)

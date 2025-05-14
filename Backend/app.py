@@ -7,19 +7,21 @@ from routes.auth import auth_bp
 from dashboards import dashboard_bp
 from routes.fleetManagement import fleet_bp
 from routes.driverManagement import driver_bp
+from routes.sidd import sidd_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 db.init_app(app)
-JWTManager(app)  # <-- THIS LINE IS MANDATORY
+JWTManager(app) 
 
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(fleet_bp, url_prefix='/api/fleet')
 app.register_blueprint(driver_bp, url_prefix='/api/driver')
+app.register_blueprint(sidd_bp, url_prefix='/api/sidd')
 
 with app.app_context():
     db.create_all()

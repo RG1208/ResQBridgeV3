@@ -22,7 +22,7 @@ import FleetSidebar from './fleetDashboard/FleetSidebar';
 import FleetDashboard from './fleetDashboard/FleetDashboard';
 import Alerts from './userDashboard/UserAlerts';
 import Family from './userDashboard/UserFamily';
-import Devices from './userDashboard/UserDevices';
+import DeviceManagement from './userDashboard/UserDevices';
 import History from './userDashboard/UserHistory';
 import Map from './userDashboard/UserMap';
 import UserSidebar from './userDashboard/UserDashboardLayout';
@@ -72,7 +72,7 @@ function App() {
           <Route path="family" element={<Family />} />
           <Route path="history" element={<History />} />
           <Route path="map" element={<Map />} />
-          <Route path="devices" element={<Devices />} />
+          <Route path="devices" element={<DeviceManagement />} />
         </Route>
 
 

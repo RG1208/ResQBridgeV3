@@ -1,326 +1,156 @@
-import React, { useState } from 'react';
-import { 
-  Smartphone, 
-  Camera, 
-  Bell, 
-  Lock, 
-  Thermometer, 
-  Power, 
-  Plus, 
-  Settings,
-  RefreshCw,
-  MoreVertical,
-  Search
-} from 'lucide-react';
+"use client";
 
-interface Device {
-  id: number;
-  name: string;
-  type: 'camera' | 'sensor' | 'alarm' | 'lock' | 'thermostat' | 'smartphone';
-  location: string;
-  status: 'online' | 'offline' | 'warning';
-  lastActive: string;
-  batteryLevel?: number;
+import { useEffect, useState } from "react";
+import { Plus, Trash2, Edit, Phone } from "lucide-react";
+import axios from "axios";
+
+interface SIDDDevice {
+  id: string;
+  driver: string;
+  contact: string;
+  car: string;
+  status: string;
+  emergency: string;
 }
 
-const devices: Device[] = [
-  { 
-    id: 1, 
-    name: 'Front Door Camera', 
-    type: 'camera', 
-    location: 'Front Entrance', 
-    status: 'online', 
-    lastActive: '2 minutes ago', 
-    batteryLevel: 87 
-  },
-  { 
-    id: 2, 
-    name: 'Kitchen Smoke Detector', 
-    type: 'sensor', 
-    location: 'Kitchen', 
-    status: 'online', 
-    lastActive: '15 minutes ago', 
-    batteryLevel: 92 
-  },
-  { 
-    id: 3, 
-    name: 'Main Alarm System', 
-    type: 'alarm', 
-    location: 'Whole House', 
-    status: 'online', 
-    lastActive: 'Just now' 
-  },
-  { 
-    id: 4, 
-    name: 'Garage Door Lock', 
-    type: 'lock', 
-    location: 'Garage', 
-    status: 'warning', 
-    lastActive: '1 hour ago', 
-    batteryLevel: 15 
-  },
-  { 
-    id: 5, 
-    name: 'Living Room Thermostat', 
-    type: 'thermostat', 
-    location: 'Living Room', 
-    status: 'online', 
-    lastActive: '5 minutes ago' 
-  },
-  { 
-    id: 6, 
-    name: 'Backyard Camera', 
-    type: 'camera', 
-    location: 'Backyard', 
-    status: 'offline', 
-    lastActive: '2 days ago', 
-    batteryLevel: 0 
-  },
-  { 
-    id: 7, 
-    name: 'John\'s Phone', 
-    type: 'smartphone', 
-    location: 'With John', 
-    status: 'online', 
-    lastActive: 'Just now', 
-    batteryLevel: 75 
-  },
-  { 
-    id: 8, 
-    name: 'Basement Motion Sensor', 
-    type: 'sensor', 
-    location: 'Basement', 
-    status: 'online', 
-    lastActive: '30 minutes ago', 
-    batteryLevel: 65 
-  }
-];
-
-const deviceIcons = {
-  camera: <Camera size={24} />,
-  sensor: <Bell size={24} />,
-  alarm: <Bell size={24} />,
-  lock: <Lock size={24} />,
-  thermostat: <Thermometer size={24} />,
-  smartphone: <Smartphone size={24} />
+const defaultDevice: SIDDDevice = {
+  id: "",
+  driver: "",
+  contact: "",
+  car: "",
+  status: "Active",
+  emergency: "",
 };
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'online':
-      return 'text-green-500';
-    case 'warning':
-      return 'text-amber-500';
-    case 'offline':
-      return 'text-gray-400';
-    default:
-      return 'text-gray-500';
-  }
-};
+export default function DeviceManagement() {
+  const [devices, setDevices] = useState<SIDDDevice[]>([]);
+  const [newDevice, setNewDevice] = useState<SIDDDevice>(defaultDevice);
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-const getBatteryColor = (level?: number) => {
-  if (!level && level !== 0) return 'bg-gray-300 dark:bg-gray-600';
-  if (level > 60) return 'bg-green-500';
-  if (level > 20) return 'bg-amber-500';
-  return 'bg-red-600';
-};
+  const API_BASE_URL = "http://localhost:5000/api/sidd";
 
-const Devices: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
-  
-  const filteredDevices = devices.filter(device => 
-    device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    device.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    fetchDevices();
+  }, []);
+
+  const fetchDevices = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(API_BASE_URL);
+      setDevices(response.data);
+    } catch (err) {
+      console.error("Failed to fetch devices:", err);
+      setError("Could not load devices. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setNewDevice({ ...newDevice, [e.target.name]: e.target.value });
+  };
+
+  const handleAddOrUpdateDevice = async () => {
+    try {
+      if (editMode) {
+        await axios.put(`${API_BASE_URL}/${newDevice.id}`, newDevice);
+      } else {
+        await axios.post(API_BASE_URL, newDevice);
+      }
+      resetModal();
+      fetchDevices();
+    } catch (err) {
+      console.error("Error saving device:", err);
+      setError("Failed to save device. Please try again.");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/${id}`);
+      setDevices(devices.filter((d) => d.id !== id));
+    } catch (err) {
+      console.error("Error deleting device:", err);
+      setError("Failed to delete device.");
+    }
+  };
+
+  const handleEdit = (device: SIDDDevice) => {
+    setNewDevice(device);
+    setEditMode(true);
+    setShowModal(true);
+  };
+
+  const resetModal = () => {
+    setNewDevice(defaultDevice);
+    setShowModal(false);
+    setEditMode(false);
+    setError(null);
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-5">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Device Management</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Manage all your safety devices in one place
-          </p>
-        </div>
-        <div className="flex space-x-2">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <RefreshCw size={16} />
-            <span>Refresh</span>
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-            <Plus size={16} />
-            <span>Add Device</span>
-          </button>
-        </div>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">SIDD Device Management</h1>
+        <button
+          onClick={() => {
+            setNewDevice(defaultDevice);
+            setEditMode(false);
+            setShowModal(true);
+          }}
+          className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
+        >
+          <Plus size={20} />
+          Add Device
+        </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-            placeholder="Search devices..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      {error && (
+        <div className="bg-red-100 text-red-800 border border-red-400 px-4 py-2 rounded mb-4">
+          {error}
         </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={() => setViewType('grid')}
-            className={`px-3 py-2 rounded-lg flex items-center gap-2 ${
-              viewType === 'grid' 
-                ? 'bg-red-600 text-white' 
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-            Grid
-          </button>
-          <button 
-            onClick={() => setViewType('list')}
-            className={`px-3 py-2 rounded-lg flex items-center gap-2 ${
-              viewType === 'list' 
-                ? 'bg-red-600 text-white' 
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
-            List
-          </button>
-        </div>
-      </div>
+      )}
 
-      {viewType === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredDevices.map((device) => (
-            <div key={device.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all">
-              <div className="p-6">
-                <div className="flex justify-between">
-                  <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400">
-                    {deviceIcons[device.type]}
-                  </div>
-                  <div className="flex items-center">
-                    <div className={`h-2.5 w-2.5 rounded-full ${
-                      device.status === 'online' ? 'bg-green-500' : 
-                      device.status === 'warning' ? 'bg-amber-500' : 'bg-gray-400'
-                    } mr-2`}></div>
-                    <span className={`text-sm ${getStatusColor(device.status)}`}>
-                      {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
-                    </span>
-                  </div>
-                </div>
-                
-                <h3 className="mt-4 font-semibold text-gray-900 dark:text-white">{device.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{device.location}</p>
-                
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Active {device.lastActive}
-                  </span>
-                  {device.batteryLevel !== undefined && (
-                    <div className="flex items-center space-x-1">
-                      <div className="w-8 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div 
-                          className={getBatteryColor(device.batteryLevel)} 
-                          style={{ width: `${device.batteryLevel}%` }} 
-                          role="progressbar"
-                          aria-valuenow={device.batteryLevel}
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                        ></div>
-                      </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{device.batteryLevel}%</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-850 px-6 py-3 flex justify-between">
-                <button className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium">
-                  <Power size={16} className="inline mr-1" />
-                  {device.status === 'online' ? 'Turn Off' : 'Turn On'}
-                </button>
-                <button className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium">
-                  <Settings size={16} className="inline mr-1" />
-                  Settings
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+      {loading ? (
+        <div className="text-center text-gray-500">Loading devices...</div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead>
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Device</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Active</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Battery</th>
-                <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Driver</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Car</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Emergency</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredDevices.map((device) => (
-                <tr key={device.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-600 dark:text-red-400">
-                        {deviceIcons[device.type]}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">{device.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{device.type.charAt(0).toUpperCase() + device.type.slice(1)}</div>
-                      </div>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {devices.map((device) => (
+                <tr key={device.id}>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{device.id}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{device.driver}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{device.contact}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{device.car}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{device.status}</td>
+                  <td className="px-6 py-4 text-sm flex items-center">
+                    <Phone size={16} className="mr-2 text-gray-400" />
+                    {device.emergency}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <div className="flex gap-2 justify-start">
+                      <button onClick={() => handleEdit(device)} className="text-blue-600 hover:text-blue-800">
+                        <Edit size={18} />
+                      </button>
+                      <button onClick={() => handleDelete(device.id)} className="text-red-600 hover:text-red-800">
+                        <Trash2 size={18} />
+                      </button>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">{device.location}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className={`h-2.5 w-2.5 rounded-full ${
-                        device.status === 'online' ? 'bg-green-500' : 
-                        device.status === 'warning' ? 'bg-amber-500' : 'bg-gray-400'
-                      } mr-2`}></div>
-                      <span className={`text-sm ${getStatusColor(device.status)}`}>
-                        {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {device.lastActive}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {device.batteryLevel !== undefined ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-16 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div 
-                            className={getBatteryColor(device.batteryLevel)} 
-                            style={{ width: `${device.batteryLevel}%` }} 
-                            role="progressbar"
-                            aria-valuenow={device.batteryLevel}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          ></div>
-                        </div>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{device.batteryLevel}%</span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-gray-500 dark:text-gray-400">N/A</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-                      <MoreVertical size={16} />
-                    </button>
                   </td>
                 </tr>
               ))}
@@ -328,8 +158,78 @@ const Devices: React.FC = () => {
           </table>
         </div>
       )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg">
+            <h2 className="text-xl font-bold mb-4">{editMode ? "Edit Device" : "Add Device"}</h2>
+
+            <div className="grid grid-cols-1 gap-4">
+              <input
+                type="text"
+                name="id"
+                value={newDevice.id}
+                onChange={handleInputChange}
+                placeholder="Device ID"
+                className="w-full p-2 border rounded mb-2"
+                disabled={editMode}
+                required
+              />
+              <input
+                type="text"
+                name="driver"
+                value={newDevice.driver}
+                onChange={handleInputChange}
+                placeholder="Driver"
+                className="w-full p-2 border rounded mb-2"
+              />
+              <input
+                type="text"
+                name="contact"
+                value={newDevice.contact}
+                onChange={handleInputChange}
+                placeholder="Contact"
+                className="w-full p-2 border rounded mb-2"
+              />
+              <input
+                type="text"
+                name="car"
+                value={newDevice.car}
+                onChange={handleInputChange}
+                placeholder="Car"
+                className="w-full p-2 border rounded mb-2"
+              />
+              <select
+                name="status"
+                value={newDevice.status}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded mb-2"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+              <input
+                type="text"
+                name="emergency"
+                value={newDevice.emergency}
+                onChange={handleInputChange}
+                placeholder="Emergency Contact"
+                className="w-full p-2 border rounded mb-4"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button onClick={resetModal} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                Cancel
+              </button>
+              <button onClick={handleAddOrUpdateDevice} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                {editMode ? "Update" : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default Devices;
+}
