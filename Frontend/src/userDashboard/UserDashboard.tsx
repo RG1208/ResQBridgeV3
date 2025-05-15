@@ -20,7 +20,7 @@ const StatCard: React.FC<{
             </p>
           )}
         </div>
-        <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full text-red-600 dark:text-red-400">
+        <div className="w-12 h-12 flex items-center justify-center bg-red-100 dark:bg-red-900/30 rounded-full text-red-600 dark:text-red-400">
           {icon}
         </div>
       </div>
