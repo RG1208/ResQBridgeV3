@@ -1,13 +1,13 @@
 from flask import Blueprint, make_response, request, jsonify
 from flask_sqlalchemy import SQLAlchemy # type: ignore
-from flask import Flask
 from flask_cors import CORS # type: ignore
+from flask import Flask
 
 db = SQLAlchemy()
-
+app = Flask(__name__)
 # Create a Blueprint for fleet management
 fleet_bp = Blueprint('fleet_bp', __name__)
-CORS(fleet_bp, resources={r"/api/fleet/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+CORS(fleet_bp, resources={r"/*": {"origins": "http://localhost:5173", "supports_credentials": True}})
 
 class Vehicle(db.Model):
     id = db.Column(db.String(80), primary_key=True)
@@ -23,6 +23,7 @@ def handle_preflight():
         response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, PATCH, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
         return response
 
 # Route to fetch all vehicles
@@ -62,11 +63,16 @@ def add_vehicle():
 @fleet_bp.route('/vehicles/<string:vehicle_id>', methods=['DELETE'])
 def delete_vehicle(vehicle_id):
     try:
-        # your DB delete logic here
-        return '', 204  # No Content (success)
+        vehicle = Vehicle.query.get(vehicle_id)  # Get vehicle by id
+        if vehicle:
+            db.session.delete(vehicle)  # Delete the vehicle
+            db.session.commit()  # Commit the transaction
+            return '', 204  # No Content (success)
+        else:
+            return jsonify({'message': 'Vehicle not found'}), 404  # Vehicle not found
     except Exception as e:
         print(f"Delete error: {e}")
-        return {'message': 'Failed to delete vehicle.'}, 500
+        return jsonify({'message': 'Failed to delete vehicle.'}), 500
     
 # Route to update a vehicle by ID
 @fleet_bp.route('/vehicles/<string:id>', methods=['PUT'])
@@ -93,9 +99,9 @@ def update_vehicle(id):
 
 @fleet_bp.after_request
 def after_request(response):
-    # Handle CORS preflight (OPTIONS) request
-    if request.method == 'OPTIONS':
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    # Add CORS headers to all responses
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response

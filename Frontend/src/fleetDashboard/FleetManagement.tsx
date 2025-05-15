@@ -81,7 +81,7 @@ export default function FleetManagement() {
     }
   }
 
- const handleDelete = async (id: string) => {
+const handleDelete = async (id: string) => {
   try {
     await axios.delete(`${API_BASE_URL}/vehicles/${id}`, {
       withCredentials: true,  // Ensure cookies and authorization headers are sent
@@ -93,7 +93,6 @@ export default function FleetManagement() {
     setError("Failed to delete vehicle. Please try again.");
   }
 };
-
 
   const handleEdit = (vehicle: Vehicle) => {
     setNewVehicle(vehicle)
