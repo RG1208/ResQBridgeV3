@@ -1,28 +1,18 @@
 from flask import Blueprint, request, jsonify, make_response
-from models import IncidentAlert , db
-from flask_cors import CORS # type: ignore
+from models import IncidentAlert, db
+from flask_cors import CORS  # type: ignore
 from datetime import datetime
 
-incident_bp = Blueprint('incident_bp', __name__)
-CORS(incident_bp, resources={r"/*": {"origins": "http://localhost:5173", "supports_credentials": True}})
+incident_bp = Blueprint('incident_bp', __name__, url_prefix='/api')
 
-# Handle CORS Preflight
-@incident_bp.before_request
-def handle_preflight():
-    if request.method == "OPTIONS":
-        response = make_response()
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        return response
+# Enable CORS for this blueprint with proper methods and origins
+CORS(incident_bp, resources={r"/alerts/*": {"origins": "http://localhost:5173"}}, methods=["GET", "POST", "DELETE", "PUT", "OPTIONS"])
 
-# POST: Receive alert from SIDD
+
 @incident_bp.route('/alerts', methods=['POST'])
 def create_alert():
     data = request.get_json()
 
-    # Parse time string to datetime object, if provided
     time_obj = None
     if 'time' in data and data['time']:
         try:
@@ -32,7 +22,7 @@ def create_alert():
 
     new_alert = IncidentAlert(
         vehicle_id=data['vehicle_id'],
-        time=time_obj,  # pass datetime object or None
+        time=time_obj,
         location=data['location'],
         severity=data['severity'],
         transcript=data['transcript'],
@@ -42,33 +32,37 @@ def create_alert():
     db.session.commit()
     return jsonify({'message': 'Alert created successfully'}), 201
 
-
-# GET: Serve alert data to frontend
+# GET: Retrieve all alerts
 @incident_bp.route('/alerts', methods=['GET'])
 def get_alerts():
     try:
         alerts = IncidentAlert.query.all()
-        result = []
-        for alert in alerts:
-           result.append({
-                'id': alert.id,
-                'vehicleId': alert.vehicle_id,
-                'severity': alert.severity,
-                'status': alert.status,
-                'time': alert.time.isoformat() if alert.time else None,
-                'location': alert.location,
-                'transcript': alert.transcript
-            })
-
+        result = [{
+            'id': alert.id,
+            'vehicleId': alert.vehicle_id,
+            'severity': alert.severity,
+            'status': alert.status,
+            'time': alert.time.isoformat() if alert.time else None,
+            'location': alert.location,
+            'transcript': alert.transcript
+        } for alert in alerts]
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Add CORS headers to all responses
-@incident_bp.after_request
-def after_request(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-    return response
+# DELETE: Delete alerts by vehicle_id
+@incident_bp.route('/alerts/<vehicle_id>', methods=['DELETE'])
+def delete_alerts_by_vehicle(vehicle_id):
+    alerts = IncidentAlert.query.filter_by(vehicle_id=vehicle_id).all()
+    
+    if not alerts:
+        return jsonify({'message': f'No alerts found for vehicle ID {vehicle_id}'}), 404
+
+    try:
+        for alert in alerts:
+            db.session.delete(alert)
+        db.session.commit()
+        return jsonify({'message': f'Alerts for vehicle {vehicle_id} deleted successfully.'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Failed to delete alerts', 'details': str(e)}), 500
