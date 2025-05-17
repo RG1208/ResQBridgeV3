@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy # type: ignore
-import datetime
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -9,7 +9,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='user')
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # <-- fixed here
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -58,3 +58,14 @@ class SIDDDevice(db.Model):
     car = db.Column(db.String, nullable=False)
     status = db.Column(db.String, nullable=False)
     emergency = db.Column(db.String, nullable=False)
+
+class IncidentAlert(db.Model):
+    __tablename__ = 'incident_alerts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle_id = db.Column(db.String(50), nullable=False)
+    time = db.Column(db.DateTime, default=datetime.utcnow)
+    location = db.Column(db.String(255), nullable=False)
+    severity = db.Column(db.String(10), nullable=False)  # High, Medium, Low
+    transcript = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(50), nullable=False, default="Pending")

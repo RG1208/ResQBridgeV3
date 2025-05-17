@@ -1,50 +1,53 @@
+import { useEffect, useState } from 'react';
 import { AlertTriangle, Clock } from 'lucide-react';
 
-const mockAlerts = [
-  {
-    id: 1,
-    vehicleId: 'V001',
-    time: '2024-02-28 10:30 AM',
-    location: '123 Main St, City',
-    severity: 'High',
-    transcript: 'Emergency brake activation detected',
-    status: 'Pending',
-  },
-  {
-    id: 2,
-    vehicleId: 'V002',
-    time: '2024-02-28 09:15 AM',
-    location: '456 Oak Ave, Town',
-    severity: 'Medium',
-    transcript: 'Unusual engine temperature',
-    status: 'Responded',
-  },
-  {
-    id: 3,
-    vehicleId: 'V003',
-    time: '2024-02-28 08:45 AM',
-    location: '789 Pine Rd, Village',
-    severity: 'Low',
-    transcript: 'Low fuel warning',
-    status: 'Resolved',
-  },
-];
+type Alert = {
+  id: string | number;
+  vehicleId: string | number;
+  severity: 'High' | 'Medium' | 'Low';
+  status: 'Pending' | 'Responded' | 'Resolved' | string;
+  time: string;
+  location: string;
+  transcript: string;
+};
 
 export default function IncidentAlerts() {
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/alerts');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setAlerts(data);
+      } catch (error) {
+        console.error('Error fetching alerts:', error);
+      }
+    };
+
+    fetchAlerts();
+  }, []);
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Incident Alerts</h1>
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="grid gap-4 p-4">
-          {mockAlerts.map((alert) => (
+          {alerts.map((alert) => (
             <div key={alert.id} className="border rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
-                  <AlertTriangle className={`
-                    ${alert.severity === 'High' ? 'text-red-500' : 
-                      alert.severity === 'Medium' ? 'text-yellow-500' : 'text-blue-500'}
-                  `} />
+                  <AlertTriangle className={`${
+                    alert.severity === 'High' ? 'text-red-500' :
+                    alert.severity === 'Medium' ? 'text-yellow-500' :
+                    'text-blue-500'
+                  }`} />
                   <span className="font-semibold">Vehicle {alert.vehicleId}</span>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm ${
