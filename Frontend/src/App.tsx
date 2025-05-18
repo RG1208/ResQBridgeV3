@@ -20,10 +20,10 @@ import Settings from './fleetDashboard/Settings';
 import Support from './fleetDashboard/Support';
 import FleetSidebar from './fleetDashboard/FleetSidebar';
 import FleetDashboard from './fleetDashboard/FleetDashboard';
-import Alerts from './userDashboard/UserAlerts';
+// import Alerts from './userDashboard/UserAlerts';
 import DeviceManagement from './userDashboard/UserDevices';
 import History from './userDashboard/UserHistory';
-import Map from './userDashboard/UserMap';
+// import Map from './userDashboard/UserMap';
 import UserSidebar from './userDashboard/UserDashboardLayout';
 import UserDashboard from './userDashboard/UserDashboard';
 
@@ -67,9 +67,9 @@ function App() {
           }
         >
           <Route index element={<UserDashboard />} />
-          <Route path="alerts" element={<Alerts />} />
+          {/* <Route path="alerts" element={<Alerts />} /> */}
           <Route path="history" element={<History />} />
-          <Route path="map" element={<Map />} />
+          {/* <Route path="map" element={<Map />} /> */}
           <Route path="devices" element={<DeviceManagement />} />
         </Route>
 

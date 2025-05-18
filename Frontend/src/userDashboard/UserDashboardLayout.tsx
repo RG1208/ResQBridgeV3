@@ -2,9 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  AlertTriangle,
   Clock,
-  MapPinned,
   TabletSmartphone
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -12,9 +10,9 @@ import ProtectedNavbar from '@/components/ProtectedNavbar';
 
 const navItems = [
   { name: 'Dashboard', path: '/user/dashboard', icon: <LayoutDashboard size={20} /> },
-  { name: 'Alerts', path: '/user/dashboard/alerts', icon: <AlertTriangle size={20} /> },
+  // { name: 'Alerts', path: '/user/dashboard/alerts', icon: <AlertTriangle size={20} /> },
   { name: 'History', path: '/user/dashboard/history', icon: <Clock size={20} /> },
-  { name: 'Live Map', path: '/user/dashboard/map', icon: <MapPinned size={20} /> },
+  // { name: 'Live Map', path: '/user/dashboard/map', icon: <MapPinned size={20} /> },
   { name: 'Devices', path: '/user/dashboard/devices', icon: <TabletSmartphone size={20} /> },
 ];
 

@@ -1,99 +1,132 @@
-import React from 'react';
-import { Bell, Clock, Users, Shield } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Car, AlertTriangle, Phone, Clock } from 'lucide-react';
+import DashboardCard from '../components/DashboardCard';
 
-const StatCard: React.FC<{
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  trend?: string;
-  trendUp?: boolean;
-}> = ({ title, value, icon, trend, trendUp }) => {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm transition-all hover:shadow-md">
-      <div className="flex justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-          <p className="text-2xl font-bold mt-1 text-gray-900 dark:text-white">{value}</p>
-          {trend && (
-            <p className={`text-xs font-medium mt-2 ${trendUp ? 'text-green-500' : 'text-red-500'}`}>
-              {trendUp ? '↑' : '↓'} {trend}
-            </p>
-          )}
-        </div>
-        <div className="w-12 h-12 flex items-center justify-center bg-red-100 dark:bg-red-900/30 rounded-full text-red-600 dark:text-red-400">
-          {icon}
-        </div>
-      </div>
-    </div>
-  );
+type Vehicle = {
+  id: string | number;
+  model: string;
+  status: string; // Can be 'Online', 'offline', etc.
+  sidd: string;
+  state: string;
 };
 
-const Dashboard: React.FC = () => {
+type Incident = {
+  id: string | number;
+  vehicleId: string | number;
+  severity: string;
+  status: 'Pending' | 'Resolved' | 'Responded';
+  time: string;
+  location: string;
+  transcript: string;
+};
+
+export default function FleetDashboard() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [alerts, setAlerts] = useState<Incident[]>([]);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [vehicleRes, alertRes] = await Promise.all([
+        fetch('http://localhost:5000/api/sidd'),
+        fetch('http://localhost:5000/api/alerts'),
+      ]);
+
+      const vehicleData: Vehicle[] = await vehicleRes.json();
+      const alertData: Incident[] = await alertRes.json();
+
+      setVehicles(vehicleData);
+      setAlerts(alertData);
+    } catch (error) {
+      console.error('Dashboard fetch error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const totalVehicles = vehicles.length;
+
+  const activeVehicles = vehicles.filter(
+    (v) => typeof v.status === 'string' && v.status.toLowerCase() === 'online'
+  ).length;
+
+  const currentAlerts = alerts.filter((a) => a.status === 'Pending').length;
+
+  const recentAlerts = [...alerts]
+    .filter((a) => a.time)
+    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+    .slice(0, 3);
+
   return (
-    <div className="space-y-6">
-      <div className="border-b border-gray-200 dark:border-gray-800 pb-5">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Welcome to your safety monitoring dashboard
-        </p>
-      </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">User Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Active Alerts" 
-          value="3" 
-          icon={<Bell size={24} />} 
-          trend="12% from yesterday" 
-          trendUp={false} 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <DashboardCard
+          title="Total Devices"
+          value={totalVehicles}
+          icon={<Car size={24} />}
+          trend={{ value: totalVehicles, isPositive: true }}
         />
-        <StatCard 
-          title="Family Members" 
-          value="4" 
-          icon={<Users size={24} />} 
-          trend="1 added this week" 
-          trendUp={true} 
+        <DashboardCard
+          title="Family Members"
+          value={activeVehicles}
+          icon={<Car size={24} />}
+          trend={{ value: activeVehicles, isPositive: true }}
         />
-        <StatCard 
-          title="Recent Incidents" 
-          value="2" 
-          icon={<Clock size={24} />} 
-          trend="5% from last week" 
-          trendUp={false} 
+        <DashboardCard
+          title="Current Alerts"
+          value={currentAlerts}
+          icon={<AlertTriangle size={24} />}
         />
-        <StatCard 
-          title="Protected Areas" 
-          value="6" 
-          icon={<Shield size={24} />} 
-          trend="2 added this month" 
-          trendUp={true} 
+        <DashboardCard
+          title="Emergency Contact"
+          value="0123456789"
+          icon={<Phone size={24} />}
         />
       </div>
 
-      <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
         <div className="space-y-4">
-          {[1, 2, 3, 4, 5].map((item) => (
-            <div key={item} className="border-b border-gray-100 dark:border-gray-700 last:border-0 pb-4 last:pb-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="mr-4 h-10 w-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 dark:text-red-400">
-                    <Bell size={18} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Motion detected at front door</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">2 hours ago</p>
-                  </div>
-                </div>
-                <button className="text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
-                  View
-                </button>
+          {recentAlerts.map((alert) => (
+            <div key={alert.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+              <Clock size={20} className="text-red-600" />
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  Vehicle #{alert.vehicleId} Alert - {alert.transcript || 'No transcript'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {new Date(alert.time).toLocaleString()} • Status: 
+                  <span
+                    className={`ml-1 font-semibold ${
+                      alert.status === 'Pending'
+                        ? 'text-yellow-600'
+                        : alert.status === 'Resolved'
+                        ? 'text-green-600'
+                        : 'text-blue-600'
+                    }`}
+                  >
+                    {alert.status}
+                  </span>
+                </p>
+
+                <p className="text-sm text-gray-500">
+                  {new Date(alert.time).toLocaleString()}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Vehicle Locations</h2>
+        <div className="bg-gray-100 h-96 rounded-lg flex items-center justify-center">
+          <p className="text-gray-500">Map View Coming Soon</p>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
