@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS # type: ignore
 from flask_jwt_extended import JWTManager # type: ignore
 from config import Config
@@ -16,6 +16,10 @@ app.config.from_object(Config)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 db.init_app(app)
 JWTManager(app) 
+
+@app.route('/')
+def index():
+    return jsonify({'message': 'AgriOracle backend is running ✅'})
 
 # Register blueprints
 app.register_blueprint(auth_bp)
