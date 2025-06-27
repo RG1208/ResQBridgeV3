@@ -16,7 +16,7 @@ export default function IncidentAlerts() {
 
   const fetchAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/alerts');
+      const response = await fetch('https://resqbridgev3.onrender.com/api/alerts');
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
       const data = await response.json();
       setAlerts(data);

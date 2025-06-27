@@ -31,7 +31,7 @@ export default function FleetManagement() {
   const [error, setError] = useState<string | null>(null)
 
   // API base URL - adjust this to match your Flask backend URL
-  const API_BASE_URL = "http://localhost:5000/api/fleet"
+  const API_BASE_URL = "https://resqbridgev3.onrender.com/api/fleet"
 
   // Fetch vehicles from the backend
   const fetchVehicles = async () => {

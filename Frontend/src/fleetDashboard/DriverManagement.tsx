@@ -30,7 +30,7 @@ export default function DriverManagement() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = "http://localhost:5000/api/driver/drivers";
+  const API_BASE_URL = "https://resqbridgev3.onrender.com/api/driver/drivers";
 
   useEffect(() => {
     fetchDrivers();

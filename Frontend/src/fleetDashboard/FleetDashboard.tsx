@@ -27,8 +27,8 @@ export default function FleetDashboard() {
   const fetchDashboardData = async () => {
     try {
       const [vehicleRes, alertRes] = await Promise.all([
-        fetch('http://localhost:5000/api/fleet/vehicles'),
-        fetch('http://localhost:5000/api/alerts'),
+        fetch('https://resqbridgev3.onrender.com/api/fleet/vehicles'),
+        fetch('https://resqbridgev3.onrender.com/api/alerts'),
       ]);
 
       const vehicleData: Vehicle[] = await vehicleRes.json();

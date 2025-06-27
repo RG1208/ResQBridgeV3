@@ -30,7 +30,7 @@ export default function DeviceManagement() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = "http://localhost:5000/api/sidd";
+  const API_BASE_URL = "https://resqbridgev3.onrender.com/api/sidd";
 
   useEffect(() => {
     fetchDevices();

@@ -30,6 +30,7 @@ const EmergencyManagement: React.FC = () => {
         {['All', 'Ongoing', 'Resolved'].map((tab) => (
           <button
             key={tab}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={() => setFilter(tab as any)}
             className={`px-4 py-2 rounded-full text-sm font-medium ${
               filter === tab
