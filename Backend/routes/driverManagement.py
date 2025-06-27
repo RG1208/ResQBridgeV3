@@ -3,13 +3,13 @@ from models import db, Driver
 from flask_cors import CORS # type: ignore
 
 driver_bp = Blueprint('driver_bp', __name__)
-CORS(driver_bp, resources={r"/api/driver/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+CORS(driver_bp, resources={r"/api/driver/*": {"origins": "https://resqbridge3.vercel.app"}}, supports_credentials=True)
 
 @driver_bp.before_request
 def handle_preflight():
     if request.method == "OPTIONS":
         response = make_response()
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        response.headers['Access-Control-Allow-Origin'] = 'https://resqbridge3.vercel.app'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response
@@ -66,7 +66,7 @@ def delete_driver(driver_id):
 @driver_bp.after_request
 def after_request(response):
     if request.method == 'OPTIONS':
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        response.headers['Access-Control-Allow-Origin'] = 'https://resqbridge3.vercel.app'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     return response
