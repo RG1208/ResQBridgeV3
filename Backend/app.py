@@ -19,7 +19,7 @@ JWTManager(app)
 
 @app.route('/')
 def index():
-    return jsonify({'message': 'AgriOracle backend is running ✅'})
+    return jsonify({'message': 'ResqBridge backend is running ✅'})
 
 # Register blueprints
 app.register_blueprint(auth_bp)
