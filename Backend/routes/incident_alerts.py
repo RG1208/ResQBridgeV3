@@ -6,7 +6,7 @@ from datetime import datetime
 incident_bp = Blueprint('incident_bp', __name__, url_prefix='/api')
 
 # Enable CORS for this blueprint with proper methods and origins
-CORS(incident_bp, resources={r"/alerts/*": {"origins": "http://localhost:5173"}}, methods=["GET", "POST", "DELETE", "PUT", "OPTIONS"])
+CORS(incident_bp, resources={r"/alerts/*": {"origins": "https://resqbridge3.vercel.app"}}, methods=["GET", "POST", "DELETE", "PUT", "OPTIONS"])
 
 
 @incident_bp.route('/alerts', methods=['POST'])

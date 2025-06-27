@@ -7,7 +7,7 @@ db = SQLAlchemy()
 app = Flask(__name__)
 # Create a Blueprint for fleet management
 fleet_bp = Blueprint('fleet_bp', __name__)
-CORS(fleet_bp, resources={r"/*": {"origins": "http://localhost:5173", "supports_credentials": True}})
+CORS(fleet_bp, resources={r"/*": {"origins": "https://resqbridge3.vercel.app", "supports_credentials": True}})
 
 class Vehicle(db.Model):
     id = db.Column(db.String(80), primary_key=True)
@@ -20,7 +20,7 @@ class Vehicle(db.Model):
 def handle_preflight():
     if request.method == "OPTIONS":
         response = make_response()
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        response.headers['Access-Control-Allow-Origin'] = 'https://resqbridge3.vercel.app'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, PATCH, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         response.headers['Access-Control-Allow-Credentials'] = 'true'
@@ -100,7 +100,7 @@ def update_vehicle(id):
 @fleet_bp.after_request
 def after_request(response):
     # Add CORS headers to all responses
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+    response.headers['Access-Control-Allow-Origin'] = 'https://resqbridge3.vercel.app'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, PUT, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     response.headers['Access-Control-Allow-Credentials'] = 'true'

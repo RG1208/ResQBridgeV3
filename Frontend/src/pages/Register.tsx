@@ -34,7 +34,7 @@ const Register = () => {
 
     try {
       // In a real app, you would make an API call to your backend
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('https://resqbridgev3.onrender.com/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -3,7 +3,7 @@ from models import db, SIDDDevice
 from flask_cors import CORS # type: ignore
 
 sidd_bp = Blueprint('sidd', __name__, url_prefix='/api/sidd')
-CORS(sidd_bp, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+CORS(sidd_bp, resources={r"/*": {"origins": "https://resqbridge3.vercel.app"}}, supports_credentials=True)
 
 # GET all devices
 @sidd_bp.route('', methods=['GET'])

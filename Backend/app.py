@@ -13,7 +13,7 @@ from routes.incident_alerts import incident_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "https://resqbridge3.vercel.app"}}, supports_credentials=True)
 db.init_app(app)
 JWTManager(app) 
 
